@@ -1,0 +1,22 @@
+.DS_Store# 環境・設定
+config.js
+.env
+
+# Mac
+.DS_Store
+
+# エディタ
+.vscode/
+.idea/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+
+# Python
+__pycache__/
+*.pyc
+.venv/
