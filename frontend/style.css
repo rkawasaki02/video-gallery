@@ -368,3 +368,232 @@ body {
 
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 .toast.err { border-color: var(--red); color: var(--red); }
+
+/* ── Drag & Drop ── */
+.card.dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+
+.card.drag-over {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px var(--cyan), 0 8px 32px rgba(125,207,255,0.15);
+  transform: translateY(-4px);
+}
+
+/* ── Hamburger ── */
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 14px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+}
+
+.hamburger span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--muted);
+  transition: background 0.15s;
+}
+
+.hamburger:hover span { background: var(--text); }
+
+/* ── Tabs scroll ── */
+.tabs-scroll {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+}
+
+.tabs-scroll::-webkit-scrollbar { display: none; }
+
+/* ── Drawer ── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  z-index: 400;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 26px;
+}
+
+.drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-title {
+  font-size: 12px;
+  color: var(--comment);
+  font-style: italic;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: var(--mono);
+  transition: color 0.15s;
+}
+
+.drawer-close:hover { color: var(--red); }
+
+.drawer-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-section-label {
+  font-size: 11px;
+  color: var(--comment);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+/* ── Tab list in drawer ── */
+.drawer-tab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+  margin-bottom: 2px;
+}
+
+.drawer-tab-item:hover { background: var(--surface2); color: var(--text); }
+.drawer-tab-item.active { background: var(--surface2); color: var(--blue); }
+.drawer-tab-item .tab-icon { color: var(--comment); font-size: 10px; }
+.drawer-tab-item.active .tab-icon { color: var(--green); }
+.drawer-tab-item .tab-count { margin-left: auto; color: var(--comment); font-size: 10px; }
+
+.drawer-add-tab {
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 7px 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  margin-top: 8px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.drawer-add-tab:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ── Context menu ── */
+.context-menu {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  min-width: 120px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.context-menu.open { display: flex; }
+
+.context-menu button {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.context-menu button:hover { background: var(--surface); }
+.context-menu button.danger { color: var(--red); }
+.context-menu button.danger:hover { background: rgba(247,118,142,0.1); }
+
+/* ── Auto-hide add form ── */
+.add-form-bar {
+  position: sticky;
+  top: 38px; /* tablineの高さ */
+  z-index: 150;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  transform: translateY(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.add-form-bar.hidden {
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* editorのtopをformの高さ分ずらさないようにする */
+.editor {
+  transition: padding-top 0.3s ease;
+}
+
+/* ── Thumbnail placeholder (Twitch / mp4) ── */
+.thumb-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+}
