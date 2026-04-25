@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>video.lua</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="tabline">
+  <div class="tab active">
+    <span class="icon">▸</span>
+    <span>video.lua</span>
+  </div>
+  <div class="tab">
+    <span class="icon">○</span>
+    <span>init.lua</span>
+  </div>
+  <div class="tab-spacer"></div>
+  <div class="tab-right">
+    <span style="color:var(--green)">● lua</span>
+    <span id="count-display">0 videos</span>
+  </div>
+</div>
+
+<div class="editor">
+  <div class="line-nums" id="lineNums"></div>
+
+  <div class="content">
+    <div class="sec-comment">-- video gallery / add new entry</div>
+
+    <div class="code-block">
+      <div class="code-line">
+        <span class="kw">local</span>&nbsp;<span class="fn">add</span>&nbsp;=&nbsp;
+        <input class="str-input" id="urlInput" type="text" placeholder='"https://youtube.com/watch?v=..."' autocomplete="off" />
+        <input class="str-input title-input" id="titleInput" type="text" placeholder='"title (optional)"' autocomplete="off" />
+        <button class="btn-exec" onclick="addVideo()">Add</button>
+      </div>
+    </div>
+
+    <div class="sec-comment">-- M.playlist = {</div>
+    <div class="gallery" id="gallery"></div>
+    <div class="sec-comment" style="margin-top:16px">-- }</div>
+  </div>
+</div>
+
+<div class="statusline">
+  <div class="sl-mode">NORMAL</div>
+  <div class="sl-file">video.lua</div>
+  <div class="sl-spacer"></div>
+  <div class="sl-right">
+    <span id="sl-count">0:1</span>
+    <span>utf-8</span>
+    <span>lua</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="main.js"></script>
+</body>
+</html>
