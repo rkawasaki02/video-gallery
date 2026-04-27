@@ -523,3 +523,49 @@ body {
   width: 34px;
   height: 34px;
 }
+
+/* ── Mobile fixes ── */
+@media (max-width: 768px) {
+  .code-line {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .str-input {
+    min-width: 100%;
+    flex: none;
+  }
+
+  .title-input {
+    min-width: 100%;
+    flex: none;
+  }
+
+  .btn-exec {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .kw, .fn {
+    display: none;
+  }
+
+  .add-form-bar {
+    padding: 10px 12px;
+  }
+
+  .code-block {
+    padding: 10px 12px;
+  }
+
+  .content {
+    padding: 16px 12px;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
