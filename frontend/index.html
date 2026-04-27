@@ -9,8 +9,10 @@
 </head>
 <body>
 
-<!-- ハンバーガーメニュー -->
+<!-- オーバーレイ -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- ドロワー -->
 <div class="drawer" id="drawer">
   <div class="drawer-header">
     <span class="drawer-title">-- menu</span>
@@ -29,41 +31,40 @@
   <button onclick="deleteTabFromMenu()" class="danger">delete</button>
 </div>
 
-<!-- Tabline -->
-<div class="tabline">
-  <button class="hamburger" onclick="openDrawer()" title="menu">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="tabs-scroll" id="tabsScroll"></div>
-  <div class="tab-spacer"></div>
-  <div class="tab-right">
-    <span style="color:var(--green)">● lua</span>
-    <span id="count-display">0 videos</span>
+<!-- ハンバーガー（固定） -->
+<div class="sidebar">
+  <div class="hamburger-wrap">
+    <button class="hamburger" onclick="openDrawer()" title="menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </div>
 
-<!-- Add form (auto-hide) -->
-<div class="add-form-bar" id="addFormBar">
-  <div class="sec-comment" style="margin-bottom:8px">-- video gallery / add new entry</div>
-  <div class="code-block" style="margin-bottom:0">
-    <div class="code-line">
-      <span class="kw">local</span>&nbsp;<span class="fn">add</span>&nbsp;=&nbsp;
-      <input class="str-input" id="urlInput" type="text" placeholder='"https://youtube.com/watch?v=..."' autocomplete="off" />
-      <input class="str-input title-input" id="titleInput" type="text" placeholder='"title (optional)"' autocomplete="off" />
-      <button class="btn-exec" onclick="addVideo()">Add</button>
+<!-- メインエリア -->
+<div class="main">
+
+  <!-- addFormBar -->
+  <div class="add-form-bar" id="addFormBar">
+    <div class="code-block" style="margin-bottom:0;">
+      <div class="code-line">
+        <span class="kw">local</span>&nbsp;<span class="fn">add</span>&nbsp;=&nbsp;
+        <input class="str-input" id="urlInput" type="text" placeholder='"https://youtube.com/watch?v=..."' autocomplete="off" />
+        <input class="str-input title-input" id="titleInput" type="text" placeholder='"title (optional)"' autocomplete="off" />
+        <button class="btn-exec" onclick="addVideo()">Add</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="editor">
-  <div class="line-nums" id="lineNums"></div>
+  <!-- コンテンツ -->
   <div class="content">
     <div class="sec-comment">-- M.playlist = {</div>
     <div class="gallery" id="gallery"></div>
     <div class="sec-comment" style="margin-top:16px">-- }</div>
   </div>
+
 </div>
 
+<!-- ステータスライン -->
 <div class="statusline">
   <div class="sl-mode">NORMAL</div>
   <div class="sl-file" id="sl-file">video.lua</div>
@@ -71,7 +72,6 @@
   <div class="sl-right">
     <span id="sl-count">0:1</span>
     <span>utf-8</span>
-    <span>lua</span>
   </div>
 </div>
 

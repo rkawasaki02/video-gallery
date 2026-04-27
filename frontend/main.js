@@ -1,3 +1,80 @@
+// ── Platform detection & helpers ──
+
+const ALLOWED_DOMAINS = [
+	'youtube.com', 'youtu.be',
+	'vimeo.com',
+	'twitch.tv',
+	'video.twimg.com',
+];
+
+function detectPlatform(url) {
+	url = url.trim().replace(/^["']|["']$/g, '');
+
+	// YouTube
+	const yt = url.match(/(?:youtube\.com\/watch\?.*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+	if (yt) return { type: 'youtube', id: yt[1], url };
+	if (/^[A-Za-z0-9_-]{11}$/.test(url)) return { type: 'youtube', id: url, url };
+
+	// Vimeo
+	const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+	if (vimeo) return { type: 'vimeo', id: vimeo[1], url };
+
+	// Twitch clip
+	const twitchClip = url.match(/twitch\.tv\/\w+\/clip\/([A-Za-z0-9_-]+)/);
+	if (twitchClip) return { type: 'twitch_clip', id: twitchClip[1], url };
+
+	// Twitch channel
+	const twitch = url.match(/twitch\.tv\/([A-Za-z0-9_]+)/);
+	if (twitch) return { type: 'twitch', id: twitch[1], url };
+
+	// mp4直リンク / X動画
+	if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('video.twimg.com')) {
+		return { type: 'mp4', id: url, url };
+	}
+
+	return null;
+}
+
+function getThumb(platform) {
+	switch (platform.type) {
+		case 'youtube': return `https://img.youtube.com/vi/${platform.id}/hqdefault.jpg`;
+		case 'vimeo': return `https://vumbnail.com/${platform.id}.jpg`;
+		default: return '';
+	}
+}
+
+function getEmbedUrl(platform, muted = true) {
+	switch (platform.type) {
+		case 'youtube':
+			return `https://www.youtube.com/embed/${platform.id}?autoplay=1&mute=${muted ? 1 : 0}&controls=1&rel=0&modestbranding=1`;
+		case 'vimeo':
+			return `https://player.vimeo.com/video/${platform.id}?autoplay=1&muted=${muted ? 1 : 0}`;
+		case 'twitch':
+			return `https://player.twitch.tv/?channel=${platform.id}&autoplay=true&muted=${muted}&parent=${location.hostname}`;
+		case 'twitch_clip':
+			return `https://clips.twitch.tv/embed?clip=${platform.id}&autoplay=true&muted=${muted}&parent=${location.hostname}`;
+		default:
+			return null;
+	}
+}
+
+function getPlatformLabel(type) {
+	const map = { youtube: 'yt', vimeo: 'vimeo', twitch: 'twitch', twitch_clip: 'twitch', mp4: 'mp4' };
+	return map[type] || type;
+}
+
+function getPlatformColor(type) {
+	const map = {
+		youtube: 'var(--red)',
+		vimeo: 'var(--blue)',
+		twitch: 'var(--purple)',
+		twitch_clip: 'var(--purple)',
+		mp4: 'var(--green)'
+	};
+	return map[type] || 'var(--muted)';
+}
+
+
 // ── Storage ──
 const KEY = 'nvim_vg_v1';
 const TABS_KEY = 'nvim_vg_tabs_v1';
@@ -29,64 +106,7 @@ if (!tabs.find(t => t.id === activeTabId)) {
 
 function genId() { return Math.random().toString(36).slice(2, 10); }
 
-// ── Platform detection ──
-function detectPlatform(url) {
-	url = url.trim().replace(/^["']|["']$/g, '');
 
-	// YouTube
-	const yt = url.match(/(?:youtube\.com\/watch\?.*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
-	if (yt) return { type: 'youtube', id: yt[1], url };
-
-	// Bare YouTube ID
-	if (/^[A-Za-z0-9_-]{11}$/.test(url)) return { type: 'youtube', id: url, url };
-
-	// Vimeo
-	const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-	if (vimeo) return { type: 'vimeo', id: vimeo[1], url };
-
-	// Twitch clip
-	const twitchClip = url.match(/twitch\.tv\/\w+\/clip\/([A-Za-z0-9_-]+)/);
-	if (twitchClip) return { type: 'twitch_clip', id: twitchClip[1], url };
-
-	// Twitch channel
-	const twitch = url.match(/twitch\.tv\/([A-Za-z0-9_]+)/);
-	if (twitch) return { type: 'twitch', id: twitch[1], url };
-
-	// mp4 / X動画など直リンク
-	if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('video.twimg.com')) {
-		return { type: 'mp4', id: url, url };
-	}
-
-	return null;
-}
-
-function getThumb(platform) {
-	switch (platform.type) {
-		case 'youtube': return `https://img.youtube.com/vi/${platform.id}/hqdefault.jpg`;
-		case 'vimeo': return `https://vumbnail.com/${platform.id}.jpg`;
-		default: return ''; // mp4・Twitchはサムネなし
-	}
-}
-
-function getEmbedUrl(platform, muted = true) {
-	switch (platform.type) {
-		case 'youtube':
-			return `https://www.youtube.com/embed/${platform.id}?autoplay=1&mute=${muted ? 1 : 0}&controls=1&rel=0&modestbranding=1`;
-		case 'vimeo':
-			return `https://player.vimeo.com/video/${platform.id}?autoplay=1&muted=${muted ? 1 : 0}`;
-		case 'twitch':
-			return `https://player.twitch.tv/?channel=${platform.id}&autoplay=true&muted=${muted}&parent=${location.hostname}`;
-		case 'twitch_clip':
-			return `https://clips.twitch.tv/embed?clip=${platform.id}&autoplay=true&muted=${muted}&parent=${location.hostname}`;
-		default:
-			return null; // mp4はvideoタグで処理
-	}
-}
-
-function getPlatformLabel(type) {
-	const map = { youtube: 'yt', vimeo: 'vimeo', twitch: 'twitch', twitch_clip: 'twitch', mp4: 'mp4' };
-	return map[type] || type;
-}
 
 // ── Video actions ──
 function addVideo() {
@@ -210,21 +230,10 @@ function deleteTabFromMenu() {
 
 // ── Render tabs ──
 function renderTabs() {
-	const tabsScroll = document.getElementById('tabsScroll');
 	const tabList = document.getElementById('tabList');
 	const slFile = document.getElementById('sl-file');
 	const activeTab = tabs.find(t => t.id === activeTabId);
 	if (slFile && activeTab) slFile.textContent = `${activeTab.name}.lua`;
-
-	tabsScroll.innerHTML = tabs.map(t => {
-		const isActive = t.id === activeTabId;
-		const count = videos.filter(v => v.tabId === t.id).length;
-		return `<div class="tab${isActive ? ' active' : ''}" data-tab-id="${t.id}" onclick="switchTab('${t.id}')">
-      <span class="icon">${isActive ? '▸' : '○'}</span>
-      <span>${esc(t.name)}.lua</span>
-      ${count > 0 ? `<span style="color:var(--comment);font-size:10px">${count}</span>` : ''}
-    </div>`;
-	}).join('');
 
 	tabList.innerHTML = tabs.map(t => {
 		const isActive = t.id === activeTabId;
@@ -241,10 +250,6 @@ function renderTabs() {
 		if (!drawerEl) return;
 		drawerEl.addEventListener('click', () => { switchTab(t.id); closeDrawer(); });
 		setupTabLongPress(drawerEl, t.id);
-	});
-
-	tabsScroll.querySelectorAll('.tab').forEach(el => {
-		setupTabLongPress(el, el.dataset.tabId);
 	});
 }
 
@@ -263,14 +268,8 @@ function closeDrawer() {
 function render() {
 	const currentVideos = videos.filter(v => v.tabId === activeTabId);
 	const n = currentVideos.length;
-	document.getElementById('count-display').textContent = `${n} video${n !== 1 ? 's' : ''}`;
+	// count-display removed
 	document.getElementById('sl-count').textContent = `${n}:1`;
-
-	const lines = 5 + Math.max(n * 3, 2);
-	document.getElementById('lineNums').innerHTML =
-		Array.from({ length: lines }, (_, i) =>
-			`<div class="line-num${i === 1 ? ' hl' : ''}">${i + 1}</div>`
-		).join('');
 
 	const gallery = document.getElementById('gallery');
 	if (n === 0) {
@@ -482,36 +481,48 @@ function onScroll() {
 const IDLE_TIMEOUT = 5000;
 let lastScrollY = 0;
 let formHideTimer = null;
-let formVisible = true;
+
+function isAtTop() { const m = document.querySelector('.main'); return !m || m.scrollTop <= 10; }
 
 function showForm() {
-	document.getElementById('addFormBar').classList.remove('hidden');
-	formVisible = true;
-	resetIdleTimer();
+	const bar = document.getElementById('addFormBar');
+	bar.classList.remove('hidden');
+	if (!isAtTop()) resetIdleTimer();
 }
 
 function hideForm() {
+	if (isAtTop()) return;
 	const url = document.getElementById('urlInput');
 	const title = document.getElementById('titleInput');
 	if (document.activeElement === url || document.activeElement === title) { resetIdleTimer(); return; }
 	document.getElementById('addFormBar').classList.add('hidden');
-	formVisible = false;
 }
 
 function resetIdleTimer() {
 	clearTimeout(formHideTimer);
-	formHideTimer = setTimeout(hideForm, IDLE_TIMEOUT);
+	if (!isAtTop()) formHideTimer = setTimeout(hideForm, IDLE_TIMEOUT);
 }
 
-window.addEventListener('scroll', () => {
-	const currentY = window.scrollY;
-	if (currentY < lastScrollY - 5) showForm();
-	else if (currentY > lastScrollY + 5) { hideForm(); clearTimeout(formHideTimer); }
-	lastScrollY = currentY;
-}, { passive: true });
+// .mainのスクロールを検知
+const mainEl = document.querySelector('.main');
+if (mainEl) {
+	mainEl.addEventListener('scroll', () => {
+		const currentY = mainEl.scrollTop;
+		if (currentY <= 10) {
+			clearTimeout(formHideTimer);
+			showForm();
+		} else if (currentY > lastScrollY + 5) {
+			clearTimeout(formHideTimer);
+			hideForm();
+		} else if (currentY < lastScrollY - 5) {
+			showForm();
+		}
+		lastScrollY = currentY;
+	}, { passive: true });
+}
 
 ['mousemove', 'mousedown', 'touchstart', 'keydown'].forEach(ev => {
-	document.addEventListener(ev, resetIdleTimer, { passive: true });
+	document.addEventListener(ev, () => { if (!isAtTop()) resetIdleTimer(); }, { passive: true });
 });
 
 function showToast(msg, err = false) {
