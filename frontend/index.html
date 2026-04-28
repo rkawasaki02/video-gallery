@@ -31,15 +31,6 @@
   <button onclick="deleteTabFromMenu()" class="danger">delete</button>
 </div>
 
-<!-- ハンバーガー（固定） -->
-<div class="sidebar">
-  <div class="hamburger-wrap">
-    <button class="hamburger" onclick="openDrawer()" title="menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</div>
-
 <!-- メインエリア -->
 <div class="main">
 
@@ -47,9 +38,12 @@
   <div class="add-form-bar" id="addFormBar">
     <div class="code-block" style="margin-bottom:0;">
       <div class="code-line">
-        <span class="kw">local</span>&nbsp;<span class="fn">add</span>&nbsp;=&nbsp;
-        <input class="str-input" id="urlInput" type="text" placeholder='"https://youtube.com/watch?v=..."' autocomplete="off" />
-        <input class="str-input title-input" id="titleInput" type="text" placeholder='"title (optional)"' autocomplete="off" />
+        <div class="hamburger-wrap">
+          <button class="hamburger" onclick="openDrawer()" title="menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+        <input class="str-input url-input" id="urlInput" type="text" placeholder='"https://youtube.com/watch?v=..."' autocomplete="off" />
         <button class="btn-exec" onclick="addVideo()">Add</button>
       </div>
     </div>

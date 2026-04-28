@@ -111,9 +111,8 @@ function genId() { return Math.random().toString(36).slice(2, 10); }
 // ── Video actions ──
 function addVideo() {
 	const urlEl = document.getElementById('urlInput');
-	const titleEl = document.getElementById('titleInput');
 	const url = urlEl.value.trim();
-	const title = titleEl.value.trim().replace(/^["']|["']$/g, '');
+	const title = '';
 	if (!url) { showToast('E: url required', true); return; }
 
 	const platform = detectPlatform(url);
@@ -134,12 +133,10 @@ function addVideo() {
 	save(videos);
 	render();
 	urlEl.value = '';
-	titleEl.value = '';
 	showToast(`-- ${getPlatformLabel(platform.type)} added ✓`);
 }
 
 document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') addVideo(); });
-document.getElementById('titleInput').addEventListener('keydown', e => { if (e.key === 'Enter') addVideo(); });
 
 function deleteVideo(uid) {
 	videos = videos.filter(v => !(v.uid === uid && v.tabId === activeTabId));
@@ -288,8 +285,8 @@ function render() {
         <div class="dot dot-r"></div>
         <div class="dot dot-y"></div>
         <div class="dot dot-g"></div>
-        <div class="card-bar-title">${esc(v.title)}</div>
-        <span style="color:${labelColor};font-size:10px;margin-right:4px">${label}</span>
+        <span style="color:${labelColor};font-size:10px;">${label}</span>
+        <span style="flex:1"></span>
         <button class="btn-delete" onclick="event.stopPropagation();deleteVideo('${v.uid}')" title=":bd">✕</button>
       </div>
       <div class="thumb-wrap">
@@ -309,10 +306,7 @@ function render() {
           </svg>
         </div>
       </div>
-      <div class="card-foot">
-        <span style="color:var(--comment)">url =</span>
-        <span class="vid-id">"${esc(v.type === 'mp4' ? v.url.slice(0, 40) + '...' : v.id)}"</span>
-      </div>
+
     </div>`;
 	}).join('');
 
@@ -478,52 +472,7 @@ function onScroll() {
 }
 
 // ── Auto-hide form ──
-const IDLE_TIMEOUT = 5000;
-let lastScrollY = 0;
-let formHideTimer = null;
 
-function isAtTop() { const m = document.querySelector('.main'); return !m || m.scrollTop <= 10; }
-
-function showForm() {
-	const bar = document.getElementById('addFormBar');
-	bar.classList.remove('hidden');
-	if (!isAtTop()) resetIdleTimer();
-}
-
-function hideForm() {
-	if (isAtTop()) return;
-	const url = document.getElementById('urlInput');
-	const title = document.getElementById('titleInput');
-	if (document.activeElement === url || document.activeElement === title) { resetIdleTimer(); return; }
-	document.getElementById('addFormBar').classList.add('hidden');
-}
-
-function resetIdleTimer() {
-	clearTimeout(formHideTimer);
-	if (!isAtTop()) formHideTimer = setTimeout(hideForm, IDLE_TIMEOUT);
-}
-
-// .mainのスクロールを検知
-const mainEl = document.querySelector('.main');
-if (mainEl) {
-	mainEl.addEventListener('scroll', () => {
-		const currentY = mainEl.scrollTop;
-		if (currentY <= 10) {
-			clearTimeout(formHideTimer);
-			showForm();
-		} else if (currentY > lastScrollY + 5) {
-			clearTimeout(formHideTimer);
-			hideForm();
-		} else if (currentY < lastScrollY - 5) {
-			showForm();
-		}
-		lastScrollY = currentY;
-	}, { passive: true });
-}
-
-['mousemove', 'mousedown', 'touchstart', 'keydown'].forEach(ev => {
-	document.addEventListener(ev, () => { if (!isAtTop()) resetIdleTimer(); }, { passive: true });
-});
 
 function showToast(msg, err = false) {
 	const t = document.getElementById('toast');
