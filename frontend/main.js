@@ -179,9 +179,9 @@ function saveTabsLocal(t) { localStorage.setItem(TABS_KEY, JSON.stringify(t)); }
 function loadActiveTab() { return localStorage.getItem(ACTIVE_TAB_KEY) || null; }
 function saveActiveTab(id) { localStorage.setItem(ACTIVE_TAB_KEY, id); }
 
-let videos = loadLocal();
-let tabs = loadTabsLocal();
-let activeTabId = loadActiveTab();
+let videos = [];
+let tabs = [];
+let activeTabId = null;
 
 function genId() { return Math.random().toString(36).slice(2, 10); }
 
@@ -190,20 +190,6 @@ function extractIdFromUrl(url, type) {
 	const platform = detectPlatform(url);
 	if (platform) return platform.id;
 	return url;
-}
-
-// タブが1つもなければデフォルト作成
-if (tabs.length === 0) {
-	const defaultTab = { id: genId(), name: 'playlist' };
-	tabs.push(defaultTab);
-	saveTabsLocal(tabs);
-	activeTabId = defaultTab.id;
-	saveActiveTab(activeTabId);
-}
-
-if (!tabs.find(t => t.id === activeTabId)) {
-	activeTabId = tabs[0].id;
-	saveActiveTab(activeTabId);
 }
 
 // ── Video actions ──
@@ -708,7 +694,9 @@ async function init() {
 		isLoggedIn = true;
 
 		// ゲストデータのマイグレーション（初回ログイン時のみ）
-		if (callbackSuccess && (loadLocal().length > 0 || loadTabsLocal().length > 0)) {
+		const guestVideos = loadLocal();
+		const guestTabs = loadTabsLocal();
+		if (callbackSuccess && (guestVideos.length > 0 || guestTabs.length > 0)) {
 			await migrateGuestData();
 		}
 
@@ -754,6 +742,10 @@ async function init() {
 		isLoggedIn = false;
 		idToken = null;
 		clearToken();
+
+		videos = loadLocal();
+		tabs = loadTabsLocal();
+		activeTabId = loadActiveTab();
 
 		if (tabs.length === 0) {
 			const defaultTab = { id: genId(), name: 'playlist' };
