@@ -1,5 +1,5 @@
-.DS_Store# 環境・設定
-config.js
+# 環境・設定
+frontend/config.js
 .env
 
 # Mac
@@ -13,8 +13,10 @@ config.js
 *.tfstate
 *.tfstate.backup
 .terraform/
-.terraform.lock.hcl
 terraform.tfvars
+
+# Terraform生成物
+infra/build/
 
 # Python
 __pycache__/
