@@ -1,8 +1,8 @@
 import json
 import boto3
 
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("videogarage-tabs")
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('videogarage-tabs')
 
 
 def lambda_handler(event, context):
@@ -16,9 +16,9 @@ def lambda_handler(event, context):
     if 'tabId' not in body or 'name' not in body:
         return {
             'statusCode': 400,
-            'headers' : {
+            'headers': {
                 'Access-Control-Allow-Origin': 'https://videogarage.jp',
-                'Context-Type': 'application/json'
+                'Content-Type': 'application/json'
             },
             'body': json.dumps({'error': 'missing required fields'})
         }
@@ -29,15 +29,15 @@ def lambda_handler(event, context):
             'userId': user_id,
             'tabId': body['tabId'],
             'name': body['name'],
-            'createAt': body.get('createAt', 0)
+            'createdAt': body.get('createdAt', 0)
         }
     )
 
     return {
         'statusCode': 201,
-        'henders': {
+        'headers': {
             'Access-Control-Allow-Origin': 'https://videogarage.jp',
-            'Context-Type': 'application/json'
+            'Content-Type': 'application/json'
         },
-        'body': json.dumps({'message': 'tab  added'})
+        'body': json.dumps({'message': 'tab added'})
     }

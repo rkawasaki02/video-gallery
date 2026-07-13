@@ -9,7 +9,7 @@ def lambda_handler(event, context):
     # CognitoのJWTトークンからuserIdを取得
     user_id = event['requestContext']['authorizer']['jwt']['claims']['sub']
 
-    # リクエストボディをバース
+    # リクエストボディをパース
     body = json.loads(event['body'])
 
     # 必須パラメータのチェック
@@ -26,19 +26,19 @@ def lambda_handler(event, context):
     # DynamoDBに動画を保存
     table.put_item(
         Item={
-        'userId': user_id,
-        'videoId': body['videoId'],
-        'url': body['url'],
-        'type': body['type'],
-        'tabId': body('tabId'),
-        'title': body.get['title', ''],
-        'addedAt': body['addedAt'],
-        'order': body.get('order', 0)
+            'userId': user_id,
+            'videoId': body['videoId'],
+            'url': body['url'],
+            'type': body['type'],
+            'tabId': body['tabId'],
+            'title': body.get('title', ''),
+            'addedAt': body['addedAt'],
+            'order': body.get('order', 0)
         }
     )
 
     return {
-        'statuCode': 201,
+        'statusCode': 201,
         'headers': {
             'Access-Control-Allow-Origin': 'https://videogarage.jp',
             'Content-Type': 'application/json'
