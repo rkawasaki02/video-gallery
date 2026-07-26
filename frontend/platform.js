@@ -1,17 +1,11 @@
 // ── Platform detection & helpers ──
-
-const ALLOWED_DOMAINS = [
-	'youtube.com', 'youtu.be',
-	'vimeo.com',
-	'twitch.tv',
-	'video.twimg.com',
-];
+// main.js から import して使う唯一の実装。main.js 側に複製を持たないこと。
 
 export function detectPlatform(url) {
 	url = url.trim().replace(/^["']|["']$/g, '');
 
-	// YouTube
-	const yt = url.match(/(?:youtube\.com\/watch\?.*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+	// YouTube（watch / youtu.be / embed / shorts / live）
+	const yt = url.match(/(?:youtube\.com\/watch\?.*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/|youtube\.com\/live\/)([A-Za-z0-9_-]{11})/);
 	if (yt) return { type: 'youtube', id: yt[1], url };
 	if (/^[A-Za-z0-9_-]{11}$/.test(url)) return { type: 'youtube', id: url, url };
 
@@ -19,7 +13,7 @@ export function detectPlatform(url) {
 	const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
 	if (vimeo) return { type: 'vimeo', id: vimeo[1], url };
 
-	// Twitch clip
+	// Twitch clip（channel 判定より先に評価すること）
 	const twitchClip = url.match(/twitch\.tv\/\w+\/clip\/([A-Za-z0-9_-]+)/);
 	if (twitchClip) return { type: 'twitch_clip', id: twitchClip[1], url };
 
@@ -27,7 +21,7 @@ export function detectPlatform(url) {
 	const twitch = url.match(/twitch\.tv\/([A-Za-z0-9_]+)/);
 	if (twitch) return { type: 'twitch', id: twitch[1], url };
 
-	// mp4直リンク / X動画
+	// 動画ファイル直リンク / X の動画
 	if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('video.twimg.com')) {
 		return { type: 'mp4', id: url, url };
 	}
@@ -59,7 +53,13 @@ export function getEmbedUrl(platform, muted = true) {
 }
 
 export function getPlatformLabel(type) {
-	const map = { youtube: 'yt', vimeo: 'vimeo', twitch: 'twitch', twitch_clip: 'twitch', mp4: 'mp4' };
+	const map = {
+		youtube: 'YouTube',
+		vimeo: 'Vimeo',
+		twitch: 'Twitch',
+		twitch_clip: 'Twitch clip',
+		mp4: 'Video'
+	};
 	return map[type] || type;
 }
 
