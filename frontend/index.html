@@ -4,78 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VideoGarage</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- オーバーレイ -->
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
 
 <!-- ドロワー -->
-<div class="drawer" id="drawer">
+<aside class="drawer" id="drawer">
   <div class="drawer-header">
-    <span class="drawer-title">-- menu</span>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <div>
+      <span class="drawer-kicker">Library</span>
+      <h2 class="drawer-title">VideoGarage</h2>
+    </div>
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">×</button>
   </div>
   <div class="drawer-section">
-    <div class="drawer-section-label">-- tabs</div>
+    <div class="drawer-section-label">Playlists</div>
     <div id="tabList"></div>
-    <button class="drawer-add-tab" onclick="addTab()">+ new tab</button>
+    <button class="drawer-add-tab" id="addTabBtn">+ New playlist</button>
   </div>
   <!-- 認証セクション -->
   <div class="drawer-section">
-    <div class="drawer-section-label">-- auth</div>
-    <div id="authStatus" style="font-size:11px;color:var(--muted);margin-bottom:8px;">-- guest mode</div>
-    <button class="drawer-add-tab" id="authBtn" onclick="handleAuth()">sign in</button>
+    <div class="drawer-section-label">Account</div>
+    <div id="authStatus" class="auth-status">Guest — saved on this device</div>
+    <button class="drawer-add-tab" id="authBtn">Sign in</button>
   </div>
-</div>
+</aside>
 
-<!-- 長押しコンテキストメニュー -->
+<!-- プレイリスト操作メニュー -->
 <div class="context-menu" id="contextMenu">
-  <button onclick="renameTabFromMenu()">rename</button>
-  <button onclick="deleteTabFromMenu()" class="danger">delete</button>
+  <button id="ctxRenameBtn">Rename</button>
+  <button id="ctxDeleteBtn" class="danger">Delete</button>
 </div>
 
 <!-- メインエリア -->
 <div class="main">
 
-  <!-- addFormBar -->
+  <header class="app-header">
+    <div class="app-header-left">
+      <button class="hamburger" id="hamburgerBtn" title="Menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand-mark">VG</div>
+      <div class="brand-copy">
+        <div class="brand-name">VideoGarage</div>
+        <div class="brand-sub">Your video library</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="header-chip" id="videoCount">0 videos</span>
+    </div>
+  </header>
+
+  <!-- 追加フォーム -->
   <div class="add-form-bar" id="addFormBar">
-    <div class="code-block" style="margin-bottom:0;">
-      <div class="code-line">
-        <div class="hamburger-wrap">
-          <button class="hamburger" onclick="openDrawer()" title="menu">
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-        <input class="str-input url-input" id="urlInput" type="text" placeholder='"https://youtube.com/watch?v=..."' autocomplete="off" />
-        <button class="btn-exec" onclick="addVideo()">Add</button>
+    <div class="input-panel">
+      <label class="field-label" for="urlInput">Video URL</label>
+      <div class="field-row">
+        <input class="text-input url-input" id="urlInput" type="text" placeholder="https://youtube.com/watch?v=..." autocomplete="off" spellcheck="false" />
+        <button class="btn-primary" id="addVideoBtn"><span>+</span> Add video</button>
       </div>
     </div>
   </div>
 
   <!-- コンテンツ -->
   <div class="content">
-    <div class="sec-comment">-- M.playlist = {</div>
+    <div class="content-header">
+      <div>
+        <span class="eyebrow">Playlist</span>
+        <h1 id="playlistTitle">Videos</h1>
+      </div>
+      <div class="header-chip">Drag to reorder</div>
+    </div>
     <div class="gallery" id="gallery"></div>
-    <div class="sec-comment" style="margin-top:16px">-- }</div>
   </div>
 
 </div>
 
-<!-- ステータスライン -->
-<div class="statusline">
-  <div class="sl-mode">NORMAL</div>
-  <div class="sl-file" id="sl-file">video.lua</div>
-  <div class="sl-spacer"></div>
-  <div class="sl-right">
-    <span id="sl-count">0:1</span>
-    <span>utf-8</span>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-<script src="main.js"></script>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="config.js"></script>
+<script type="module" src="main.js"></script>
 </body>
 </html>
