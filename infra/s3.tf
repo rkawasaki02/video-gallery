@@ -48,9 +48,8 @@ resource "aws_s3_object" "frontend" {
 
   bucket = aws_s3_bucket.video_garage.id
   key    = each.value
-  source = "../frontend/${each.value}"
+  source = "${path.module}/../frontend/${each.value}"
 
-  etag = filemd5("../frontend/${each.value}")
-
+  etag         = filemd5("${path.module}/../frontend/${each.value}")
   content_type = lookup(local.frontend_mime_types, try(regex("\\.[^.]+$", lower(each.value)), ""), "application/octet-stream")
 }
