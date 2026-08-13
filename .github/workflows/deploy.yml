@@ -8,6 +8,7 @@ on:
       - "infra/**"
       - "frontend/**"
       - "backend/**"
+  workflow_dispatch:
 
 permissions:
   id-token: write
