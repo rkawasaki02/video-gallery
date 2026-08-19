@@ -1,62 +1,57 @@
 name: CI
-
 on:
   pull_request:
-    paths:
-      - "infra/**"
-      - "frontend/**"
-      - "backend/**"
-      - ".github/workflows/**"
-
 permissions:
   id-token: write
   contents: read
   pull-requests: write
-
 concurrency:
   group: terraform-ci-${{ github.ref }}
   cancel-in-progress: true
-
 env:
   AWS_REGION: ap-northeast-1
   TF_VERSION: 1.15.8
-
 jobs:
   terraform:
     name: Terraform Plan
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: infra
-
     steps:
       - uses: actions/checkout@v4
 
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+
       - uses: hashicorp/setup-terraform@v3
+        if: steps.filter.outputs.infra == 'true'
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
-
       - uses: aws-actions/configure-aws-credentials@v4
+        if: steps.filter.outputs.infra == 'true'
         with:
           role-to-assume: ${{ vars.AWS_PLAN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-
       - name: Terraform init
+        if: steps.filter.outputs.infra == 'true'
         run: terraform init
-
       - name: Terraform validate
+        if: steps.filter.outputs.infra == 'true'
         run: terraform validate
-
       - name: Terraform plan
         id: plan
+        if: steps.filter.outputs.infra == 'true'
         run: |
           set -o pipefail
           terraform plan -no-color -input=false | tee plan.txt
-
       - name: Comment plan on PR
-        if: always()
+        if: always() && steps.filter.outputs.infra == 'true'
         uses: actions/github-script@v7
         with:
           script: |
